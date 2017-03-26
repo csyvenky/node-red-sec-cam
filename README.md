@@ -1,5 +1,6 @@
 # node-red-sec-cam
 node-red Security Camera Project for Raspberry Pi
+![Node-Red GUI](https://raw.githubusercontent.com/csyvenky/node-red-sec-cam/master/nr-gui.PNG "Node-Red GUI")
 
 ## Project Goals
 - to have a couple Raspberry Pi constantly taking home security photos.
@@ -27,3 +28,5 @@ node-red Security Camera Project for Raspberry Pi
 - Finished.
 
 The Node-Red project is on [GitHub](https://github.com/csyvenky/node-red-sec-cam)
+
+![Splunk Dashboard](https://raw.githubusercontent.com/csyvenky/node-red-sec-cam/master/splunk-dashboard.PNG "Splunk Dashboard")
