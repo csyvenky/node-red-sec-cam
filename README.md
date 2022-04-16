@@ -21,13 +21,15 @@ node-red Security Camera Project for Raspberry Pi
 ## System Flow
 - Python script takes photo every 30 seconds and saves it locally to Pi drive.
 - Node-Red flow watches the pictures folder for changes.
-- Prior to saving the image to AWS S3 cloud storage the ImageMagick "identify" application is called in order to process the image's blackness value - if the image is too dark it will not be saved.
+- Prior to saving the image to AWS S3 cloud storage the ImageMagick "identify" application is called in order to process the image's "blackness" value - if the image is too dark it will not be saved.
 - If the image quality is good the flow saves the photo to AWS S3 blob-storage.
 - S3 policies move older photos to Glacier storage to save on costs; an additional policy will purge/expire the images from AWS.
 - In parallel to the save operation the system saves operational metadata to a local Splunk infrastructure.
 - The Node-Red flow also has a sub-flow that periodically deletes old images from the Pi and saves the details to Splunk.
-- Finished.
+- A new flow has recently been added which once every hour takes the most recent image and runs it through a custom computer vision AI algorithm which has been trained to identify "normal situations" at my house.
+- The output from the computer vision AI is saved to Azure Table Storage for future analytical processing. 
 
 The Node-Red project is on [GitHub](https://github.com/csyvenky/node-red-sec-cam)
 
 ![Splunk Dashboard](https://raw.githubusercontent.com/csyvenky/node-red-sec-cam/master/splunk-dashboard.PNG "Splunk Dashboard")
+![Computer Vision AI](https://raw.githubusercontent.com/csyvenky/node-red-sec-cam/master/computer_vision_flow.png "Computer Vision AI")

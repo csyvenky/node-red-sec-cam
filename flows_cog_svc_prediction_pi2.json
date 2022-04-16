@@ -1,0 +1,216 @@
+[
+    {
+        "id": "80d7ae2c.6acce",
+        "type": "tab",
+        "label": "Az Cognitive Service Prediction",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "d114c4a6.f55678",
+        "type": "debug",
+        "z": "80d7ae2c.6acce",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 2210,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "68d0bd94.f28d94",
+        "type": "inject",
+        "z": "80d7ae2c.6acce",
+        "name": "",
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "repeat": "3600",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 20,
+        "wires": [
+            [
+                "98a4deb2.af467"
+            ]
+        ]
+    },
+    {
+        "id": "98a4deb2.af467",
+        "type": "exec",
+        "z": "80d7ae2c.6acce",
+        "command": "ls -t | head -n1",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Get latest image filename",
+        "x": 310,
+        "y": 80,
+        "wires": [
+            [
+                "5fa1ce18.b1c46"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "62b2fa70.b2e794",
+        "type": "file in",
+        "z": "80d7ae2c.6acce",
+        "name": "Binary Buffer",
+        "filename": "",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "x": 770,
+        "y": 200,
+        "wires": [
+            [
+                "7d6d16dc.053588"
+            ]
+        ]
+    },
+    {
+        "id": "5fa1ce18.b1c46",
+        "type": "function",
+        "z": "80d7ae2c.6acce",
+        "name": "Process latest image",
+        "func": "// trim the newline char\nfileName = msg.payload.substring(0, msg.payload.length-1)\nmsg.filename = \"/home/pi/\" + fileName;\n// debug\n// node.warn(fileName);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 560,
+        "y": 140,
+        "wires": [
+            [
+                "62b2fa70.b2e794"
+            ]
+        ]
+    },
+    {
+        "id": "23bd55a.c8c58aa",
+        "type": "exec",
+        "z": "80d7ae2c.6acce",
+        "command": "",
+        "addpay": true,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "Call Prediction Endpoint",
+        "x": 1470,
+        "y": 380,
+        "wires": [
+            [
+                "ea6fa18f.975e6",
+                "f985c7c7.b7fd58"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "7d6d16dc.053588",
+        "type": "function",
+        "z": "80d7ae2c.6acce",
+        "name": "Complete Filename for cURL",
+        "func": "const app_name = \"pi2\"\n\n// add '@' for cURL\nconst base_filename = \"\"\nprediction_filename = base_filename.concat('@', msg.filename)\n// debug\n// node.warn(prediction_filename)\n\n// bake the full cURL cmd\nconst curl_cmd = \"curl \" +\n    \"--location \" +\n    \"--request POST 'https://westus2.api.cognitive.microsoft.com/customvision/v3.1/Prediction/<project id>/classify/iterations/Iteration%205/image?application=\" + app_name + \"' \" +\n    \"--header 'Prediction-key: <insert key here>' \" +\n    \"--header 'Content-Type: image/jpeg' \"+\n    \"--data-binary '\" + prediction_filename + \"'\";\n\n// set flow level variable\nflow.set(\"curl_cmd\", curl_cmd);\n// debug\n// node.warn(flow.get(\"curl_cmd\"));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1000,
+        "y": 260,
+        "wires": [
+            [
+                "2cb27f1f.c0e48"
+            ]
+        ]
+    },
+    {
+        "id": "2cb27f1f.c0e48",
+        "type": "change",
+        "z": "80d7ae2c.6acce",
+        "name": "Config for Exec",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "curl_cmd",
+                "tot": "flow"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1240,
+        "y": 320,
+        "wires": [
+            [
+                "23bd55a.c8c58aa"
+            ]
+        ]
+    },
+    {
+        "id": "7e31a222.76e94c",
+        "type": "comment",
+        "z": "80d7ae2c.6acce",
+        "name": "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.CognitiveServices/accounts/<account>",
+        "info": "",
+        "x": 1710,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "f7d863bd.8168f",
+        "type": "Aleph Table Storage",
+        "z": "80d7ae2c.6acce",
+        "name": "Azure Table Storage",
+        "debug": false,
+        "x": 2000,
+        "y": 500,
+        "wires": [
+            [
+                "d114c4a6.f55678"
+            ]
+        ]
+    },
+    {
+        "id": "f985c7c7.b7fd58",
+        "type": "function",
+        "z": "80d7ae2c.6acce",
+        "name": "Insert into Az Table Storage",
+        "func": "table_entity_payload = { \n  \"tableName\": \"noderedseccam\",\n  \"action\": \"I\", \n  \"partitionKey\": \"part1\", \n  \"rowKey\": msg._msgid, \n  \"data\": \n    {\n        \"Payload\" : msg.payload\n    }\n};\n// debug\nnode.log(table_entity_payload)\n\n// save the JSON to the msg object for table storage node\nmsg.payload = table_entity_payload\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1740,
+        "y": 440,
+        "wires": [
+            [
+                "f7d863bd.8168f"
+            ]
+        ]
+    },
+    {
+        "id": "ea6fa18f.975e6",
+        "type": "debug",
+        "z": "80d7ae2c.6acce",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1710,
+        "y": 380,
+        "wires": []
+    }
+]
