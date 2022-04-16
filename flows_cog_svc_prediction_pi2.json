@@ -16,8 +16,8 @@
         "console": false,
         "tostatus": false,
         "complete": "payload",
-        "x": 2210,
-        "y": 560,
+        "x": 1530,
+        "y": 760,
         "wires": []
     },
     {
@@ -51,7 +51,7 @@
         "timer": "",
         "oldrc": false,
         "name": "Get latest image filename",
-        "x": 310,
+        "x": 290,
         "y": 80,
         "wires": [
             [
@@ -70,8 +70,8 @@
         "format": "",
         "chunk": false,
         "sendError": false,
-        "x": 770,
-        "y": 200,
+        "x": 90,
+        "y": 400,
         "wires": [
             [
                 "7d6d16dc.053588"
@@ -83,14 +83,14 @@
         "type": "function",
         "z": "80d7ae2c.6acce",
         "name": "Process latest image",
-        "func": "// trim the newline char\nfileName = msg.payload.substring(0, msg.payload.length-1)\nmsg.filename = \"/home/pi/\" + fileName;\n// debug\n// node.warn(fileName);\nreturn msg;",
+        "func": "// trim the newline char\n// set flow level variable\nflow.set(\"base_file_name\", msg.payload.substring(0, msg.payload.length-1));\n\n// append filename property to msg object\nmsg.filename = \"/home/pi/\" + flow.get(\"base_file_name\");\n\n// debug\n// node.warn(msg.filename);\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 560,
+        "x": 540,
         "y": 140,
         "wires": [
             [
-                "62b2fa70.b2e794"
+                "4c33a9e5.f2e0f8"
             ]
         ]
     },
@@ -105,8 +105,8 @@
         "timer": "",
         "oldrc": false,
         "name": "Call Prediction Endpoint",
-        "x": 1470,
-        "y": 380,
+        "x": 790,
+        "y": 580,
         "wires": [
             [
                 "ea6fa18f.975e6",
@@ -121,11 +121,11 @@
         "type": "function",
         "z": "80d7ae2c.6acce",
         "name": "Complete Filename for cURL",
-        "func": "const app_name = \"pi2\"\n\n// add '@' for cURL\nconst base_filename = \"\"\nprediction_filename = base_filename.concat('@', msg.filename)\n// debug\n// node.warn(prediction_filename)\n\n// bake the full cURL cmd\nconst curl_cmd = \"curl \" +\n    \"--location \" +\n    \"--request POST 'https://westus2.api.cognitive.microsoft.com/customvision/v3.1/Prediction/<project id>/classify/iterations/Iteration%205/image?application=\" + app_name + \"' \" +\n    \"--header 'Prediction-key: <insert key here>' \" +\n    \"--header 'Content-Type: image/jpeg' \"+\n    \"--data-binary '\" + prediction_filename + \"'\";\n\n// set flow level variable\nflow.set(\"curl_cmd\", curl_cmd);\n// debug\n// node.warn(flow.get(\"curl_cmd\"));\n\nreturn msg;",
+        "func": "const app_name = \"pi2\"\n\n// add '@' for cURL\nconst base_filename = \"\"\nprediction_filename = base_filename.concat('@', msg.filename)\n// debug\n// node.warn(prediction_filename)\n\n// bake the full cURL cmd\nconst curl_cmd = \"curl \" +\n    \"--location \" +\n    \"--request POST 'https://westus2.api.cognitive.microsoft.com/customvision/v3.1/Prediction/<project id>/classify/iterations/<urlencoded iteration name>/image?application=\" + app_name + \"' \" +\n    \"--header 'Prediction-key: <key goes here>' \" +\n    \"--header 'Content-Type: image/jpeg' \"+\n    \"--data-binary '\" + prediction_filename + \"'\";\n\n// set flow level variable\nflow.set(\"curl_cmd\", curl_cmd);\n// debug\n// node.warn(flow.get(\"curl_cmd\"));\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1000,
-        "y": 260,
+        "x": 320,
+        "y": 460,
         "wires": [
             [
                 "2cb27f1f.c0e48"
@@ -151,8 +151,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1240,
-        "y": 320,
+        "x": 560,
+        "y": 520,
         "wires": [
             [
                 "23bd55a.c8c58aa"
@@ -165,8 +165,8 @@
         "z": "80d7ae2c.6acce",
         "name": "/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.CognitiveServices/accounts/<account>",
         "info": "",
-        "x": 1710,
-        "y": 340,
+        "x": 1030,
+        "y": 540,
         "wires": []
     },
     {
@@ -175,8 +175,8 @@
         "z": "80d7ae2c.6acce",
         "name": "Azure Table Storage",
         "debug": false,
-        "x": 2000,
-        "y": 500,
+        "x": 1320,
+        "y": 700,
         "wires": [
             [
                 "d114c4a6.f55678"
@@ -188,11 +188,11 @@
         "type": "function",
         "z": "80d7ae2c.6acce",
         "name": "Insert into Az Table Storage",
-        "func": "table_entity_payload = { \n  \"tableName\": \"noderedseccam\",\n  \"action\": \"I\", \n  \"partitionKey\": \"part1\", \n  \"rowKey\": msg._msgid, \n  \"data\": \n    {\n        \"Payload\" : msg.payload\n    }\n};\n// debug\nnode.log(table_entity_payload)\n\n// save the JSON to the msg object for table storage node\nmsg.payload = table_entity_payload\nreturn msg;",
+        "func": "table_entity_payload = { \n  \"tableName\": \"noderedseccam\",\n  \"action\": \"I\", \n  \"partitionKey\": \"part1\", \n  \"rowKey\": msg._msgid, \n  \"data\": \n    {\n        \"FileName\" : flow.get(\"base_file_name\"),\n        \"Payload\" : msg.payload\n    }\n};\n// debug\n// node.log(table_entity_payload)\n\n// save the JSON to the msg object for table storage node\nmsg.payload = table_entity_payload\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 1740,
-        "y": 440,
+        "x": 1060,
+        "y": 640,
         "wires": [
             [
                 "f7d863bd.8168f"
@@ -209,8 +209,80 @@
         "console": false,
         "tostatus": false,
         "complete": "true",
-        "x": 1710,
-        "y": 380,
+        "x": 990,
+        "y": 580,
         "wires": []
+    },
+    {
+        "id": "4c33a9e5.f2e0f8",
+        "type": "function",
+        "z": "80d7ae2c.6acce",
+        "name": "Config ImageMagick",
+        "func": "var imageMagickArgs = \"-format '%[mean]' \" + msg.filename\n\nmsg.payload = imageMagickArgs\n\n// debug\n// node.warn(msg)\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 780,
+        "y": 200,
+        "wires": [
+            [
+                "fd8944c7.341a68"
+            ]
+        ]
+    },
+    {
+        "id": "d22273c2.dc839",
+        "type": "comment",
+        "z": "80d7ae2c.6acce",
+        "name": "Check the image's mean with ImageMagick",
+        "info": "If the image is mainly black (ie. too dark due to night), we'll skip saving it to AWS.",
+        "x": 850,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "fd8944c7.341a68",
+        "type": "exec",
+        "z": "80d7ae2c.6acce",
+        "command": "/usr/bin/identify",
+        "addpay": true,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "3",
+        "oldrc": false,
+        "name": "",
+        "x": 1000,
+        "y": 260,
+        "wires": [
+            [
+                "966fb173.f2b38"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "966fb173.f2b38",
+        "type": "switch",
+        "z": "80d7ae2c.6acce",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "4500",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1170,
+        "y": 320,
+        "wires": [
+            [
+                "62b2fa70.b2e794"
+            ]
+        ]
     }
 ]
