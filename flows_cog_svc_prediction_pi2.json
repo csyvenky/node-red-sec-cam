@@ -110,7 +110,8 @@
         "wires": [
             [
                 "ea6fa18f.975e6",
-                "f985c7c7.b7fd58"
+                "f985c7c7.b7fd58",
+                "dca112e6.06262"
             ],
             [],
             []
@@ -121,7 +122,7 @@
         "type": "function",
         "z": "80d7ae2c.6acce",
         "name": "Complete Filename for cURL",
-        "func": "const app_name = \"pi2\"\n\n// add '@' for cURL\nconst base_filename = \"\"\nprediction_filename = base_filename.concat('@', msg.filename)\n// debug\n// node.warn(prediction_filename)\n\n// bake the full cURL cmd\nconst curl_cmd = \"curl \" +\n    \"--location \" +\n    \"--request POST 'https://westus2.api.cognitive.microsoft.com/customvision/v3.1/Prediction/<project id>/classify/iterations/<urlencoded iteration name>/image?application=\" + app_name + \"' \" +\n    \"--header 'Prediction-key: <key goes here>' \" +\n    \"--header 'Content-Type: image/jpeg' \"+\n    \"--data-binary '\" + prediction_filename + \"'\";\n\n// set flow level variable\nflow.set(\"curl_cmd\", curl_cmd);\n// debug\n// node.warn(flow.get(\"curl_cmd\"));\n\nreturn msg;",
+        "func": "const app_name = \"pi2\"\n\n// add '@' for cURL\nconst base_filename = \"\"\nprediction_filename = base_filename.concat('@', msg.filename)\n// debug\n// node.warn(prediction_filename)\n\n// bake the full cURL cmd\nconst curl_cmd = \"curl \" +\n    \"--location \" +\n    \"--request POST 'https://westus2.api.cognitive.microsoft.com/customvision/v3.1/Prediction/<project id>/classify/iterations/<iteration name>/image?application=\" + app_name + \"' \" +\n    \"--header 'Prediction-key: <key>' \" +\n    \"--header 'Content-Type: image/jpeg' \"+\n    \"--data-binary '\" + prediction_filename + \"'\";\n\n// set flow level variable\nflow.set(\"curl_cmd\", curl_cmd);\n// debug\n// node.warn(flow.get(\"curl_cmd\"));\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 320,
@@ -188,7 +189,7 @@
         "type": "function",
         "z": "80d7ae2c.6acce",
         "name": "Insert into Az Table Storage",
-        "func": "table_entity_payload = { \n  \"tableName\": \"noderedseccam\",\n  \"action\": \"I\", \n  \"partitionKey\": \"part1\", \n  \"rowKey\": msg._msgid, \n  \"data\": \n    {\n        \"FileName\" : flow.get(\"base_file_name\"),\n        \"Payload\" : msg.payload\n    }\n};\n// debug\n// node.log(table_entity_payload)\n\n// save the JSON to the msg object for table storage node\nmsg.payload = table_entity_payload\nreturn msg;",
+        "func": "table_entity_payload = { \n  \"tableName\": \"noderedseccam\",\n  \"action\": \"I\", \n  \"partitionKey\": \"part1\", \n  \"rowKey\": msg._msgid, \n  \"data\": \n    {\n        \"FileName\" : flow.get(\"base_file_name\"),\n        \"Payload\" : msg.payload\n    }\n};\n// debug\n// node.warn(table_entity_payload)\n// node.warn(JSON.stringify(table_entity_payload))\n\n// save the JSON to the msg object for table storage node\nmsg.payload = table_entity_payload\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 1060,
@@ -282,6 +283,39 @@
         "wires": [
             [
                 "62b2fa70.b2e794"
+            ]
+        ]
+    },
+    {
+        "id": "dca112e6.06262",
+        "type": "function",
+        "z": "80d7ae2c.6acce",
+        "name": "Config Datadog Log",
+        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"ai-prediction\",\n    \"ddsource\": \"node-red-sec-cam\",\n    \"ddtags\": \"tag:value,tag2:value2\",\n    \"message\": msg.payload\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<api key>\",\n    \"DD-APPLICATION-KEY\" : \"<app key>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": "1",
+        "noerr": 0,
+        "x": 1040,
+        "y": 760,
+        "wires": [
+            [
+                "a5411b16.7f61c8"
+            ]
+        ]
+    },
+    {
+        "id": "a5411b16.7f61c8",
+        "type": "http request",
+        "z": "80d7ae2c.6acce",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 1290,
+        "y": 820,
+        "wires": [
+            [
+                "d114c4a6.f55678"
             ]
         ]
     }
