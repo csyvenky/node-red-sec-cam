@@ -17,6 +17,7 @@ node-red Security Camera Project for Raspberry Pi
 - [Node-Red](https://nodered.org/)
 - [Amazon Web Services](https://aws.amazon.com/) Account
 - (optional) [Splunk](https://www.splunk.com/) for Operational Reporting
+- (optional) [Datadog](https://www.datadoghq.com/) for Operational Reporting of the Custom Vision AI
 
 ## System Flow
 - Python script takes photo every 30 seconds and saves it locally to Pi drive.
