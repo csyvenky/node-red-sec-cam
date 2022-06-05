@@ -30,7 +30,7 @@ node-red Security Camera Project for Raspberry Pi
 - A new flow has recently been added which once every hour takes the most recent image and runs it through a custom computer vision AI algorithm which has been trained to identify "normal situations" at my house.
 - The output from the computer vision AI is saved to Azure Table Storage for future analytical processing. 
 
-The Node-Red project is on [GitHub](https://github.com/csyvenky/node-red-sec-cam)
+The Node-Red project is on [GitHub](https://github.com/node-red/node-red)
 
 ![Splunk Dashboard](https://raw.githubusercontent.com/csyvenky/node-red-sec-cam/master/splunk-dashboard.PNG "Splunk Dashboard")
 ![Computer Vision AI](https://raw.githubusercontent.com/csyvenky/node-red-sec-cam/master/computer_vision_flow.png "Computer Vision AI")
