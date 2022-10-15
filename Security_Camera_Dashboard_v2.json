@@ -6,7 +6,7 @@
 				"primary": "ds_search_1"
 			},
 			"showProgressBar": true,
-			"title": "Security Cam Image Captures",
+			"title": "Security Cam Captures",
 			"options": {
 				"yAxisAbbreviation": "off",
 				"y2AxisAbbreviation": "off",
@@ -20,13 +20,14 @@
 				"yAxisScale": "linear",
 				"showOverlayY2Axis": 0,
 				"y2AxisScale": "inherit",
-				"nullValueDisplay": "gaps",
-				"dataValuesDisplay": "off",
+				"dataValuesDisplay": "minmax",
 				"showSplitSeries": 0,
 				"showIndependentYRanges": 0,
-				"legendDisplay": "right"
+				"legendDisplay": "right",
+				"xAxisTitleText": "Time",
+				"yAxisTitleText": "Count"
 			},
-			"context": {}
+			"description": ""
 		},
 		"viz_chart_2": {
 			"type": "splunk.pie",
@@ -34,11 +35,12 @@
 				"primary": "ds_search_2"
 			},
 			"showProgressBar": true,
-			"title": "Payload Size (MB)",
+			"title": "Payload Size",
 			"options": {
-				"collapseThreshold": 0.01
+				"collapseThreshold": 0.01,
+				"labelDisplay": "valuesAndPercentage"
 			},
-			"context": {}
+			"description": "Binary payload in MB"
 		},
 		"viz_chart_3": {
 			"type": "splunk.line",
@@ -46,7 +48,7 @@
 				"primary": "ds_search_3"
 			},
 			"showProgressBar": true,
-			"title": "Security Cam Image Purge",
+			"title": "Image Purges",
 			"options": {
 				"yAxisAbbreviation": "off",
 				"y2AxisAbbreviation": "off",
@@ -61,12 +63,14 @@
 				"showOverlayY2Axis": 0,
 				"y2AxisScale": "inherit",
 				"nullValueDisplay": "gaps",
-				"dataValuesDisplay": "off",
+				"dataValuesDisplay": "minmax",
 				"showSplitSeries": 0,
 				"showIndependentYRanges": 0,
-				"legendDisplay": "right"
+				"legendDisplay": "right",
+				"xAxisTitleText": "Time",
+				"yAxisTitleText": "Images Purged"
 			},
-			"context": {}
+			"description": ""
 		}
 	},
 	"dataSources": {
@@ -80,7 +84,8 @@
 				},
 				"refresh": "1m",
 				"refreshType": "delay"
-			}
+			},
+			"name": "Security Camera Image Count"
 		},
 		"ds_search_2": {
 			"type": "ds.search",
@@ -92,7 +97,8 @@
 				},
 				"refresh": "1m",
 				"refreshType": "delay"
-			}
+			},
+			"name": "Payload Size"
 		},
 		"ds_search_3": {
 			"type": "ds.search",
@@ -104,7 +110,8 @@
 				},
 				"refresh": "1m",
 				"refreshType": "delay"
-			}
+			},
+			"name": "Image Purges"
 		}
 	},
 	"defaults": {
@@ -141,7 +148,7 @@
 					"x": 0,
 					"y": 0,
 					"w": 400,
-					"h": 250
+					"h": 412
 				}
 			},
 			{
@@ -151,7 +158,7 @@
 					"x": 400,
 					"y": 0,
 					"w": 400,
-					"h": 250
+					"h": 412
 				}
 			},
 			{
@@ -161,7 +168,7 @@
 					"x": 800,
 					"y": 0,
 					"w": 400,
-					"h": 250
+					"h": 412
 				}
 			}
 		],
