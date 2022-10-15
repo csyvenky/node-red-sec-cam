@@ -1,0 +1,174 @@
+{
+	"visualizations": {
+		"viz_chart_1": {
+			"type": "splunk.line",
+			"dataSources": {
+				"primary": "ds_search_1"
+			},
+			"showProgressBar": true,
+			"title": "Security Cam Image Captures",
+			"options": {
+				"yAxisAbbreviation": "off",
+				"y2AxisAbbreviation": "off",
+				"showRoundedY2AxisLabels": false,
+				"legendTruncation": "ellipsisMiddle",
+				"showY2MajorGridLines": true,
+				"xAxisLabelRotation": 0,
+				"xAxisTitleVisibility": "show",
+				"yAxisTitleVisibility": "show",
+				"y2AxisTitleVisibility": "show",
+				"yAxisScale": "linear",
+				"showOverlayY2Axis": 0,
+				"y2AxisScale": "inherit",
+				"nullValueDisplay": "gaps",
+				"dataValuesDisplay": "off",
+				"showSplitSeries": 0,
+				"showIndependentYRanges": 0,
+				"legendDisplay": "right"
+			},
+			"context": {}
+		},
+		"viz_chart_2": {
+			"type": "splunk.pie",
+			"dataSources": {
+				"primary": "ds_search_2"
+			},
+			"showProgressBar": true,
+			"title": "Payload Size (MB)",
+			"options": {
+				"collapseThreshold": 0.01
+			},
+			"context": {}
+		},
+		"viz_chart_3": {
+			"type": "splunk.line",
+			"dataSources": {
+				"primary": "ds_search_3"
+			},
+			"showProgressBar": true,
+			"title": "Security Cam Image Purge",
+			"options": {
+				"yAxisAbbreviation": "off",
+				"y2AxisAbbreviation": "off",
+				"showRoundedY2AxisLabels": false,
+				"legendTruncation": "ellipsisMiddle",
+				"showY2MajorGridLines": true,
+				"xAxisLabelRotation": 0,
+				"xAxisTitleVisibility": "show",
+				"yAxisTitleVisibility": "show",
+				"y2AxisTitleVisibility": "show",
+				"yAxisScale": "linear",
+				"showOverlayY2Axis": 0,
+				"y2AxisScale": "inherit",
+				"nullValueDisplay": "gaps",
+				"dataValuesDisplay": "off",
+				"showSplitSeries": 0,
+				"showIndependentYRanges": 0,
+				"legendDisplay": "right"
+			},
+			"context": {}
+		}
+	},
+	"dataSources": {
+		"ds_search_1": {
+			"type": "ds.search",
+			"options": {
+				"query": "index=\"node-red-sec-cam\" host=\"pi*\"   source=\"blob storage\" | timechart  span=5m count by host",
+				"queryParameters": {
+					"earliest": "$field1.earliest$",
+					"latest": "$field1.latest$"
+				},
+				"refresh": "1m",
+				"refreshType": "delay"
+			}
+		},
+		"ds_search_2": {
+			"type": "ds.search",
+			"options": {
+				"query": "index=\"node-red-sec-cam\" \n| eval totalBytes = size\n| eval totalMegabytes=totalBytes/1024/1024\n| chart sum(totalMegabytes) by host",
+				"queryParameters": {
+					"earliest": "$field1.earliest$",
+					"latest": "$field1.latest$"
+				},
+				"refresh": "1m",
+				"refreshType": "delay"
+			}
+		},
+		"ds_search_3": {
+			"type": "ds.search",
+			"options": {
+				"query": "index=\"node-red-sec-cam\" host=\"pi*\" source=\"purge images\"  | timechart  count by host",
+				"queryParameters": {
+					"earliest": "$field1.earliest$",
+					"latest": "$field1.latest$"
+				},
+				"refresh": "1m",
+				"refreshType": "delay"
+			}
+		}
+	},
+	"defaults": {
+		"dataSources": {
+			"ds.search": {
+				"options": {
+					"queryParameters": {}
+				}
+			}
+		}
+	},
+	"inputs": {
+		"input_1": {
+			"type": "input.timerange",
+			"title": "",
+			"options": {
+				"token": "field1",
+				"defaultValue": "-6h,now"
+			}
+		}
+	},
+	"layout": {
+		"type": "grid",
+		"options": {
+			"submitButton": false,
+			"height": 250,
+			"showTitleAndDescription": false
+		},
+		"structure": [
+			{
+				"item": "viz_chart_1",
+				"type": "block",
+				"position": {
+					"x": 0,
+					"y": 0,
+					"w": 400,
+					"h": 250
+				}
+			},
+			{
+				"item": "viz_chart_2",
+				"type": "block",
+				"position": {
+					"x": 400,
+					"y": 0,
+					"w": 400,
+					"h": 250
+				}
+			},
+			{
+				"item": "viz_chart_3",
+				"type": "block",
+				"position": {
+					"x": 800,
+					"y": 0,
+					"w": 400,
+					"h": 250
+				}
+			}
+		],
+		"globalInputs": [
+			"input_1"
+		]
+	},
+	"description": "",
+	"title": "Security Cameras v2"
+}
