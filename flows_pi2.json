@@ -13,13 +13,26 @@
         "info": ""
     },
     {
+        "id": "efbc32432c43da44",
+        "type": "tab",
+        "label": "AWS CUR to Azure",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "3827c158.54139e",
         "type": "tls-config",
         "name": "",
         "cert": "",
         "key": "",
         "ca": "",
-        "verifyservercert": false
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": false,
+        "alpnprotocol": ""
     },
     {
         "id": "4e7843d3.a1687c",
@@ -35,6 +48,10 @@
         "type": "aws-config"
     },
     {
+        "id": "5ead59342ed38e53",
+        "type": "aws-config"
+    },
+    {
         "id": "e2e1f025.02972",
         "type": "inject",
         "z": "6f7d319e.7b6f3",
@@ -46,7 +63,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 110,
-        "y": 420,
+        "y": 560,
         "wires": [
             [
                 "1784a0e2.47514f"
@@ -65,13 +82,17 @@
         "oldrc": false,
         "name": "",
         "x": 310,
-        "y": 420,
+        "y": 560,
         "wires": [
             [
-                "21ceb5f4.93dd7a"
+                "21ceb5f4.93dd7a",
+                "08788f2a601b867d",
+                "c773238ef8425199"
             ],
             [
-                "21ceb5f4.93dd7a"
+                "21ceb5f4.93dd7a",
+                "08788f2a601b867d",
+                "c773238ef8425199"
             ],
             [
                 "21ceb5f4.93dd7a"
@@ -85,7 +106,7 @@
         "name": "Purge images 5+ days old every hour",
         "info": "",
         "x": 190,
-        "y": 460,
+        "y": 600,
         "wires": []
     },
     {
@@ -105,35 +126,22 @@
         ]
     },
     {
-        "id": "1afb429a.05565d",
-        "type": "http request",
-        "z": "6f7d319e.7b6f3",
-        "name": "",
-        "method": "use",
-        "ret": "txt",
-        "url": "",
-        "tls": "3827c158.54139e",
-        "x": 790,
-        "y": 360,
-        "wires": [
-            [
-                "571438f5.ac4ef8"
-            ]
-        ]
-    },
-    {
         "id": "f8254731.f09d98",
         "type": "function",
         "z": "6f7d319e.7b6f3",
+        "d": true,
         "name": "Config Splunk HEC",
-        "func": "// strip off the last three numbers\nvar trimEpochDate = new Date().valueOf().toString();\ntrimEpochDate = trimEpochDate.substr(0,trimEpochDate.length-3);\n\n// node.warn(JSON.stringify(msg));\n// node.warn(escape(msg));\n\n// add ImageMacigck field to msg\n// assuming size, filename already present\nvar imMeanVal = msg.payload;\nmsg.imMeanVal = imMeanVal;\n\nmsg.payload = {\n    \"time\": parseInt(trimEpochDate),\n    \"host\":\"pi2\",\n    \"source\":\"blob storage\",\n    \"event\": JSON.stringify(msg)\n}\nmsg.headers = {\n    \"Authorization\" : \"Splunk <splunk auth>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://maui.local:8088/services/collector/event\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "func": "// strip off the last three numbers\nvar trimEpochDate = new Date().valueOf().toString();\ntrimEpochDate = trimEpochDate.substr(0,trimEpochDate.length-3);\n\n// node.warn(JSON.stringify(msg));\n// node.warn(escape(msg));\n\n// add ImageMacigck field to msg\n// assuming size, filename already present\nvar imMeanVal = msg.payload;\nmsg.imMeanVal = imMeanVal;\n\nmsg.payload = {\n    \"time\": parseInt(trimEpochDate),\n    \"host\":\"pi2\",\n    \"source\":\"blob storage\",\n    \"event\": JSON.stringify(msg)\n}\nmsg.headers = {\n    \"Authorization\" : \"Splunk 31E9DF7E-6A39-43B6-9C8A-7E6A562EE006\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://maui.local:8088/services/collector/event\";\nmsg.method = \"POST\";\n\nreturn msg;",
         "outputs": "1",
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 570,
-        "y": 360,
+        "y": 300,
         "wires": [
             [
-                "1afb429a.05565d"
+                "18c4d82a854a0b1a"
             ]
         ]
     },
@@ -142,11 +150,14 @@
         "type": "debug",
         "z": "6f7d319e.7b6f3",
         "name": "",
-        "active": false,
-        "console": "false",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
         "complete": "true",
-        "x": 970,
-        "y": 360,
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 340,
         "wires": []
     },
     {
@@ -156,10 +167,17 @@
         "name": "",
         "method": "use",
         "ret": "txt",
+        "paytoqs": "ignore",
         "url": "",
         "tls": "4e7843d3.a1687c",
-        "x": 750,
-        "y": 420,
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 830,
+        "y": 560,
         "wires": [
             [
                 "852c13ca.dbd49"
@@ -170,12 +188,17 @@
         "id": "21ceb5f4.93dd7a",
         "type": "function",
         "z": "6f7d319e.7b6f3",
+        "d": true,
         "name": "Config Splunk HEC",
         "func": "// strip off the last three numbers\nvar trimEpochDate = new Date().valueOf().toString();\ntrimEpochDate = trimEpochDate.substr(0,trimEpochDate.length-3);\n\nmsg.payload = {\n    \"time\": parseInt(trimEpochDate),\n    \"host\":\"pi2\",\n    \"source\":\"purge images\",\n    \"event\": JSON.stringify(msg)\n}\nmsg.headers = {\n    \"Authorization\" : \"Splunk 31E9DF7E-6A39-43B6-9C8A-7E6A562EE006\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://maui.local:8088/services/collector/event\";\nmsg.method = \"POST\";\n\nreturn msg;",
         "outputs": "1",
+        "timeout": "",
         "noerr": 0,
-        "x": 530,
-        "y": 420,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 560,
         "wires": [
             [
                 "71dc3d5f.f53504"
@@ -192,8 +215,8 @@
         "console": false,
         "tostatus": false,
         "complete": "true",
-        "x": 930,
-        "y": 420,
+        "x": 1010,
+        "y": 560,
         "wires": []
     },
     {
@@ -294,7 +317,11 @@
         "wires": [
             [
                 "11b9bdf5.641302",
-                "f8254731.f09d98"
+                "f8254731.f09d98",
+                "be92517041063721",
+                "fe351cbc79ca4079",
+                "c1e1f35df6e182e0",
+                "249d9010296874a8"
             ]
         ]
     },
@@ -318,9 +345,151 @@
         "localFilename": "",
         "region": "us-west-2",
         "name": "",
-        "x": 850,
+        "x": 880,
         "y": 240,
         "wires": []
+    },
+    {
+        "id": "be92517041063721",
+        "type": "function",
+        "z": "6f7d319e.7b6f3",
+        "name": "Config New Relic Metric",
+        "func": "// add ImageMacigck field to msg\n// assuming size, filename already present\nvar imMeanVal = msg.payload;\nmsg.imMeanVal = imMeanVal;\n\n// node.warn(imMeanVal)\n\nmsg.payload = [\n  {\n    \"metrics\": [\n      {\n        \"name\": \"nodered.im.mean\",\n        \"type\": \"gauge\",\n        \"value\": parseFloat(imMeanVal),\n        \"timestamp\": Date.now(),\n        \"attributes\": {\n          \"host.name\": \"pi2\",\n          \"service.name\": \"node-red-sec-cam\"\n        }\n      }\n    ]\n  }\n]\n\nmsg.headers = {\n    \"Api-Key\" : \"<API KEY>\",\n    \"Content-Type\" : \"application/json\"\n}\n\nmsg.url = \"https://metric-api.newrelic.com/metric/v1\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 360,
+        "wires": [
+            [
+                "18c4d82a854a0b1a"
+            ]
+        ]
+    },
+    {
+        "id": "fe351cbc79ca4079",
+        "type": "function",
+        "z": "6f7d319e.7b6f3",
+        "name": "Config New Relic Log",
+        "func": "// add ImageMacigck field to msg\n// assuming size, filename already present\nvar imMeanVal = msg.payload;\nmsg.imMeanVal = imMeanVal;\n\nmsg.payload = {\n    \"timestamp\": Date.now(),\n    \"host\":\"pi2\",\n    \"logtype\" : \"node-red-sample\",\n    \"message\": JSON.stringify(msg)\n}\n\nmsg.headers = {\n    \"Api-Key\" : \"<API KEY>\",\n    \"Content-Type\" : \"application/json\"\n}\n\nmsg.url = \"https://log-api.newrelic.com/log/v1\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 400,
+        "wires": [
+            [
+                "18c4d82a854a0b1a"
+            ]
+        ]
+    },
+    {
+        "id": "18c4d82a854a0b1a",
+        "type": "http request",
+        "z": "6f7d319e.7b6f3",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "3827c158.54139e",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 830,
+        "y": 340,
+        "wires": [
+            [
+                "571438f5.ac4ef8"
+            ]
+        ]
+    },
+    {
+        "id": "249d9010296874a8",
+        "type": "function",
+        "z": "6f7d319e.7b6f3",
+        "name": "Config Datadog Log",
+        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"node-red\",\n    \"ddsource\": \"node-red\",\n    \"ddtags\": \"obs-platform:datadog\",\n    \"message\": msg.payload\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<API KEY>\",\n    \"DD-APPLICATION-KEY\" : \"<APP KEY>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": "1",
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 500,
+        "wires": [
+            [
+                "18c4d82a854a0b1a"
+            ]
+        ]
+    },
+    {
+        "id": "c1e1f35df6e182e0",
+        "type": "function",
+        "z": "6f7d319e.7b6f3",
+        "name": "Config Datadog Metric",
+        "func": "var epochDate = new Date().valueOf().toString();\ntrimEpochDate = epochDate.substr(0,epochDate.length-3);\n\nmsg.payload = {\n    \"series\": [\n        {\n            \"metric\": \"nodered.im.mean\",\n            \"type\": 0,\n            \"points\": [\n                {\n                    \"timestamp\": parseInt(trimEpochDate),\n                    \"value\": msg.payload\n                }\n            ],\n            \"resources\": [\n                {\n                    \"name\": \"pi2\",\n                    \"type\": \"host\"\n                }\n            ]\n        }\n    ]\n}\n\nmsg.headers = {\n    \"DD-API-KEY\" : \"<API KEY>\",\n    \"DD-APPLICATION-KEY\" : \"<APP KEY>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://api.datadoghq.com/api/v2/series\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": "1",
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 460,
+        "wires": [
+            [
+                "18c4d82a854a0b1a"
+            ]
+        ]
+    },
+    {
+        "id": "c773238ef8425199",
+        "type": "function",
+        "z": "6f7d319e.7b6f3",
+        "name": "Config New Relic Metric",
+        "func": "msg.payload = [\n  {\n    \"metrics\": [\n      {\n        \"name\": \"nodered.purge.event\",\n        \"type\": \"gauge\",\n        \"value\": JSON.stringify(msg),\n        \"timestamp\": Date.now(),\n        \"attributes\": {\n          \"host.name\": \"pi2\",\n          \"service.name\": \"node-red-sec-cam\"\n        }\n      }\n    ]\n  }\n]\n\nmsg.headers = {\n    \"Api-Key\" : \"<API KEY>\",\n    \"Content-Type\" : \"application/json\"\n}\n\nmsg.url = \"https://metric-api.newrelic.com/metric/v1\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 620,
+        "wires": [
+            [
+                "71dc3d5f.f53504"
+            ]
+        ]
+    },
+    {
+        "id": "08788f2a601b867d",
+        "type": "function",
+        "z": "6f7d319e.7b6f3",
+        "name": "Config New Relic Log",
+        "func": "msg.payload = {\n    \"timestamp\": Date.now(),\n    \"host\":\"pi2\",\n    \"logtype\" : \"node-red-purge-event\",\n    \"message\": JSON.stringify(msg)\n}\n\nmsg.headers = {\n    \"Api-Key\" : \"<API KEY>\",\n    \"Content-Type\" : \"application/json\"\n}\n\nmsg.url = \"https://log-api.newrelic.com/log/v1\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 660,
+        "wires": [
+            [
+                "71dc3d5f.f53504"
+            ]
+        ]
     },
     {
         "id": "d114c4a6.f55678",
@@ -343,19 +512,16 @@
         "name": "",
         "props": [
             {
-                "p": "payload",
-                "v": "true",
-                "vt": "bool"
+                "p": "payload"
             },
             {
                 "p": "topic",
-                "v": "",
                 "vt": "str"
             }
         ],
         "repeat": "3600",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "true",
@@ -427,10 +593,11 @@
         "type": "exec",
         "z": "80d7ae2c.6acce",
         "command": "",
-        "addpay": true,
+        "addpay": "payload",
         "append": "",
         "useSpawn": "false",
         "timer": "",
+        "winHide": false,
         "oldrc": false,
         "name": "Call Prediction Endpoint",
         "x": 790,
@@ -450,7 +617,7 @@
         "type": "function",
         "z": "80d7ae2c.6acce",
         "name": "Complete Filename for cURL",
-        "func": "const app_name = \"pi2\"\n\n// add '@' for cURL\nconst base_filename = \"\"\nprediction_filename = base_filename.concat('@', msg.filename)\n// debug\n// node.warn(prediction_filename)\n\n// bake the full cURL cmd\nconst curl_cmd = \"curl \" +\n    \"--location \" +\n    \"--request POST 'https://westus2.api.cognitive.microsoft.com/customvision/v3.1/Prediction/<id>/classify/iterations/Iteration%207/image?application=\" + app_name + \"' \" +\n    \"--header 'Prediction-key: <prediction key>' \" +\n    \"--header 'Content-Type: image/jpeg' \"+\n    \"--data-binary '\" + prediction_filename + \"'\";\n\n// set flow level variable\nflow.set(\"curl_cmd\", curl_cmd);\n// debug\n// node.warn(flow.get(\"curl_cmd\"));\n\nreturn msg;",
+        "func": "const app_name = \"pi2\"\n\n// add '@' for cURL\nconst base_filename = \"\"\nprediction_filename = base_filename.concat('@', msg.filename)\n// debug\n// node.warn(prediction_filename)\n\n// bake the full cURL cmd\nconst curl_cmd = \"curl \" +\n    \"--location \" +\n    \"--request POST 'https://westus2.api.cognitive.microsoft.com/customvision/v3.0/Prediction/ff6d260f-0b53-40b0-9450-7e48b68bf180/classify/iterations/Iteration%209/image?application=\" + app_name + \"' \" +\n    \"--header 'Prediction-key: <KEY>' \" +\n    \"--header 'Content-Type: image/jpeg' \"+\n    \"--data-binary '\" + prediction_filename + \"'\";\n\n// set flow level variable\nflow.set(\"curl_cmd\", curl_cmd);\n// debug\n// node.warn(flow.get(\"curl_cmd\"));\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -527,6 +694,8 @@
         "console": false,
         "tostatus": false,
         "complete": "true",
+        "statusVal": "",
+        "statusType": "auto",
         "x": 990,
         "y": 580,
         "wires": []
@@ -608,8 +777,9 @@
         "type": "function",
         "z": "80d7ae2c.6acce",
         "name": "Config Datadog Log",
-        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"ai-prediction\",\n    \"ddsource\": \"node-red-sec-cam\",\n    \"ddtags\": \"tag:value,tag2:value2\",\n    \"message\": msg.payload\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<api key>\",\n    \"DD-APPLICATION-KEY\" : \"<application key>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"ai-prediction\",\n    \"ddsource\": \"node-red-sec-cam\",\n    \"ddtags\": \"tag:value,tag2:value2\",\n    \"message\": msg.payload\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<API KEY>\",\n    \"DD-APPLICATION-KEY\" : \"<APP KEY>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
         "outputs": "1",
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -655,6 +825,388 @@
         "wires": [
             [
                 "d114c4a6.f55678"
+            ]
+        ]
+    },
+    {
+        "id": "315b51d808c080ee",
+        "type": "inject",
+        "z": "efbc32432c43da44",
+        "name": "Pipeline Schedule",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "30 07 * * *",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "AWS CUR Pipeilne has Started",
+        "payloadType": "str",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "8ee562f0e684a939",
+                "f4c303fa933c8865"
+            ]
+        ]
+    },
+    {
+        "id": "8ee562f0e684a939",
+        "type": "amazon s3",
+        "z": "efbc32432c43da44",
+        "aws": "5ead59342ed38e53",
+        "bucket": "aws-cloud-costs",
+        "filename": "exports/aws-cloud-costs-report/20231101-20231201/aws-cloud-costs-report-00001.csv.zip",
+        "region": "ca-central-1",
+        "name": "aws-cloud-costs S3 Bucket",
+        "x": 350,
+        "y": 240,
+        "wires": [
+            [
+                "1f01442b23726a8a",
+                "51b129dfc4581899"
+            ]
+        ]
+    },
+    {
+        "id": "f87f34f2e1cca719",
+        "type": "exec",
+        "z": "efbc32432c43da44",
+        "command": "unzip -o aws-cloud-costs-report-00001.csv.zip",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "5",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Unzip File",
+        "x": 540,
+        "y": 300,
+        "wires": [
+            [
+                "cb8a2036679e02dd"
+            ],
+            [
+                "cb8a2036679e02dd"
+            ],
+            [
+                "cb8a2036679e02dd",
+                "5fc40df75acbd4ed"
+            ]
+        ]
+    },
+    {
+        "id": "f4c303fa933c8865",
+        "type": "function",
+        "z": "efbc32432c43da44",
+        "name": "Config Datadog Log",
+        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"node-red\",\n    \"ddsource\": \"aws-cur-pipeline\",\n    \"ddtags\": \"obs-platform:datadog\",\n    \"message\": msg.payload\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<API KEY>\",\n    \"DD-APPLICATION-KEY\" : \"<APP KEY>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": "1",
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 160,
+        "wires": [
+            [
+                "24728ab5909c92a1"
+            ]
+        ]
+    },
+    {
+        "id": "24728ab5909c92a1",
+        "type": "http request",
+        "z": "efbc32432c43da44",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "3827c158.54139e",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 550,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1f01442b23726a8a",
+        "type": "function",
+        "z": "efbc32432c43da44",
+        "name": "Config Datadog Log",
+        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"node-red\",\n    \"ddsource\": \"aws-cur-pipeline\",\n    \"ddtags\": \"obs-platform:datadog\",\n    \"message\": msg.error\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<API KEY>\",\n    \"DD-APPLICATION-KEY\" : \"<APP KEY>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": "1",
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 240,
+        "wires": [
+            [
+                "a90e61ce48c63841"
+            ]
+        ]
+    },
+    {
+        "id": "a90e61ce48c63841",
+        "type": "http request",
+        "z": "efbc32432c43da44",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "3827c158.54139e",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 770,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cb8a2036679e02dd",
+        "type": "function",
+        "z": "efbc32432c43da44",
+        "name": "Config Datadog Log",
+        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"node-red\",\n    \"ddsource\": \"aws-cur-pipeline\",\n    \"ddtags\": \"obs-platform:datadog\",\n    \"message\": msg.payload\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<API KEY>\",\n    \"DD-APPLICATION-KEY\" : \"<APP KEY>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": "1",
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 300,
+        "wires": [
+            [
+                "d7714cfa47a6d5c5"
+            ]
+        ]
+    },
+    {
+        "id": "d7714cfa47a6d5c5",
+        "type": "http request",
+        "z": "efbc32432c43da44",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "3827c158.54139e",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "x": 930,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5fc40df75acbd4ed",
+        "type": "switch",
+        "z": "efbc32432c43da44",
+        "name": "",
+        "property": "payload.code",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 310,
+        "y": 380,
+        "wires": [
+            [
+                "fb5738cbbee4cb82"
+            ]
+        ]
+    },
+    {
+        "id": "51b129dfc4581899",
+        "type": "file",
+        "z": "efbc32432c43da44",
+        "name": "Save the Zip",
+        "filename": "aws-cloud-costs-report-00001.csv.zip",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 330,
+        "y": 300,
+        "wires": [
+            [
+                "f87f34f2e1cca719"
+            ]
+        ]
+    },
+    {
+        "id": "ffc002fbdb0895e9",
+        "type": "Aleph Save Blob",
+        "z": "efbc32432c43da44",
+        "name": "Azure Save Blob Storage",
+        "x": 710,
+        "y": 380,
+        "wires": [
+            [
+                "5bcea023c483213d"
+            ]
+        ]
+    },
+    {
+        "id": "fb5738cbbee4cb82",
+        "type": "function",
+        "z": "efbc32432c43da44",
+        "name": "Config Az Blob",
+        "func": "msg.payload = \"aws-cloud-costs-report-00001.csv\"\nmsg.blobName = \"aws-cur-exports/aws-cloud-costs-report-00001.csv\"\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 380,
+        "wires": [
+            [
+                "ffc002fbdb0895e9"
+            ]
+        ]
+    },
+    {
+        "id": "5bcea023c483213d",
+        "type": "switch",
+        "z": "efbc32432c43da44",
+        "name": "",
+        "property": "status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "OK",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Error",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 440,
+        "wires": [
+            [
+                "2a803ac6bb82d8a6"
+            ],
+            [
+                "53036cba69b34a99"
+            ]
+        ]
+    },
+    {
+        "id": "0121faaf6bed6e7e",
+        "type": "function",
+        "z": "efbc32432c43da44",
+        "name": "Config Datadog Log",
+        "func": "msg.payload = {\n    \"level\": \"Info\",\n    \"hostname\": \"pi2\",\n    \"service\": \"node-red\",\n    \"ddsource\": \"aws-cur-pipeline\",\n    \"ddtags\": \"obs-platform:datadog\",\n    \"message\": msg.payload\n}\nmsg.headers = {\n    \"DD-API-KEY\" : \"<API KEY>\",\n    \"DD-APPLICATION-KEY\" : \"<APP KEY>\",\n    \"Content-Type\" : \"application/json\",\n    \"Cache-Control\": \"no-cache\"\n}\n\nmsg.url = \"https://http-intake.logs.datadoghq.com/api/v2/logs\";\nmsg.method = \"POST\";\n\nreturn msg;",
+        "outputs": "1",
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 520,
+        "wires": [
+            [
+                "6679f8a772fa4537"
+            ]
+        ]
+    },
+    {
+        "id": "6679f8a772fa4537",
+        "type": "http request",
+        "z": "efbc32432c43da44",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "3827c158.54139e",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1050,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2a803ac6bb82d8a6",
+        "type": "function",
+        "z": "efbc32432c43da44",
+        "name": "function 1",
+        "func": "msg.payload = \"AWS CUR Pipeline has completed, with status: \" + msg.status + \".\"\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 500,
+        "wires": [
+            [
+                "0121faaf6bed6e7e"
+            ]
+        ]
+    },
+    {
+        "id": "53036cba69b34a99",
+        "type": "function",
+        "z": "efbc32432c43da44",
+        "name": "function 2",
+        "func": "msg.payload = \"AWS CUR Pipeline has completed, with status: \" + msg.status + \". The error was: \" + msg.statusMessage\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 540,
+        "wires": [
+            [
+                "0121faaf6bed6e7e"
             ]
         ]
     }
